@@ -1,34 +1,38 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { FormCriarTarefa } from "./FormCriarTarefa";
+import { FormEditarTarefa } from "./FormEditarTarefa";
 
 
 export function Header(props) {
 
-  const renderAuthenticationButtons = () => {
+    const renderHeader = () => {
+
+        if (!props.usuarioLogado) {
+            return (
+                <p>
+                    Por fazer, faça o <Link className="link-light" to="/loginForm">login</Link> ou
+                    <Link className="link-light" to="/logout">cadastre-se</Link>
+                </p>
+            )
+        } else {
+
+            if (!props.tarefaSelecionda) {
+                return (<FormCriarTarefa />)
+            } else {
+                return (<FormEditarTarefa />)
+            }
+
+        }
+    }
 
     return (
-      <>
-        <li className="nav-item">
-          <Link className="nav-link" to="/login">Login</Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/cadastro">Cadastrar-se</Link>
-        </li>
-      </>
+        <>
+            <header className={"p-5 text-bg-secondary bg-gradient rounded text-center"}>
+                <h1>LISTA DE TAREFAS</h1>
+
+                {renderHeader()}
+
+            </header>
+        </>
     )
-  }
-
-
-  return (
-    <>
-      <nav className={"navbar navbar-expand-sm bg-light navbar-light"}>
-        <div id="container1" className={"container-fluid"}>
-          <Link to="/" className='navbar-brand'>Lista de Tarefas</Link>
-        </div>
-        <ul className={"navbar-nav me-auto mb-2 mb-rg-0"}>
-          {renderAuthenticationButtons()}
-        </ul>
-      </nav>
-
-    </>
-  )
 }

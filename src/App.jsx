@@ -3,7 +3,9 @@ import { Contador } from './exemplos/Contador'
 import { BrowserRouter } from 'react-router-dom';
 import { Routes } from 'react-router';
 import { Route } from 'react-router';
-import { Header } from './components/Header/Header';
+import { Nav } from './components/Nav/Nav';
+import { Home } from './pages/Home/Home';
+import { PaginaZuera } from './pages/PaginaZuera/PaginaZuera';
 
 function App() {
   return (
@@ -11,7 +13,12 @@ function App() {
       {/* <Contador/> */}
       <BrowserRouter>
 
-      <Header/>
+        <Nav />
+
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="pagina_zuera" element={<PaginaZuera />}></Route>
+        </Routes>
 
       </BrowserRouter>
     </>
