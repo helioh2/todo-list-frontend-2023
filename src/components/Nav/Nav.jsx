@@ -5,17 +5,30 @@ export function Nav(props) {
 
   const renderAuthenticationButtons = () => {
 
-    return (
-      <>
-        <li className="nav-item">
-          <Link className="nav-link" to="/login">Login</Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/cadastro">Cadastrar-se</Link>
-        </li>
-      </>
-    )
-  }
+    if (!props.userData) {
+      return (
+        <>
+          <li className="nav-item">
+            <Link className="nav-link" to="/login">Login</Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/cadastro">Cadastrar-se</Link>
+          </li>
+        </>
+      )
+    } else {
+      return (
+        <>
+          <li className="nav-item">
+            Olá {props.userData.usuario.username}!!
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/logout">Logout</Link>
+          </li>
+        </>
+      )
+    }
+}
 
 
   return (
