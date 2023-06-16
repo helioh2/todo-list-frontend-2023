@@ -7,7 +7,7 @@ export function Header(props) {
 
     const renderHeader = () => {
 
-        if (!props.usuarioLogado) {
+        if (!props.dadosUsuario || props.dadosUsuario.usuario == undefined) {
             return (
                 <p>
                     Por fazer, faça o <Link className="link-light" to="/loginForm">login</Link> ou

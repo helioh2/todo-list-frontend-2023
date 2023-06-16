@@ -18,7 +18,7 @@ export function Pokedex(props) {
             );
             if (res.ok){
                 const json = await res.json();
-                setEnderecoImagem(json["sprites"]["versions"]["generation-v"]["black-white"]["animated"]["front_default"])
+                setEnderecoImagem(json["sprites"]["versions"]["generation-v"]["black-white"]["animated"]["back_default"])
             }
         }
         //chama função fetchData:

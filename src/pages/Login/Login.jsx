@@ -30,7 +30,7 @@ export function Login(props) {
     if (res.ok) {
       const json = await res.json();
       console.log(json);
-      props.setUserData(json);
+      props.setDadosUsuario(json);
 
       // REDIRECIONAR PARA A TELA INICIAL
       navigate("/");

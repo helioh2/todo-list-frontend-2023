@@ -1,11 +1,20 @@
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 
 export function Nav(props) {
 
+  const navigate = useNavigate();
+
+  const logout = () => {
+    props.removeDadosUsuario();
+    navigate("/");
+  }
+
   const renderAuthenticationButtons = () => {
 
-    if (!props.userData) {
+    if (!props.dadosUsuario || !props.dadosUsuario.usuario) {
       return (
         <>
           <li className="nav-item">
@@ -20,10 +29,10 @@ export function Nav(props) {
       return (
         <>
           <li className="nav-item">
-            Olá {props.userData.usuario.username}!!
+            Olá {props.dadosUsuario.usuario.username}!!
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/logout">Logout</Link>
+            <Link className="nav-link" onClick={() => props.removeDadosUsuario()}>Logout</Link>
           </li>
         </>
       )
