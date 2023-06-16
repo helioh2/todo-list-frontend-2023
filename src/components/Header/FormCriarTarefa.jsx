@@ -1,19 +1,30 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-import { adicionarTarefa } from "../../store/actions/tarefasActions";
+import { adicionarTarefa, atualizarTarefa } from "../../store/actions/tarefasActions";
+import { concluirEdicao } from "../../store/actions/editandoActions";
 import { connect } from "react-redux";
 
-function FormCriarTarefa({ tarefas, dadosUsuario, adicionarTarefa}) {
+function FormCriarTarefa({editando, concluirEdicao, dadosUsuario, adicionarTarefa, atualizarTarefa}) {
 
     const [dadosForm, setDadosForm] = useState({texto: ""})
 
 
-    async function criarTarefa(event) {
+    useEffect(() => {
+        if (editando) {
+            setDadosForm({texto: editando.texto})
+        }
+    }, [editando])
+
+    async function criarOuEditarTarefa(event) {
         event.preventDefault();
 
         let url_base = "http://localhost:3000";
         let url = `${url_base}/tarefas`
         let method = "POST"
+        if (editando) {
+            method = "PATCH"
+            url += `/${editando._id}`
+        }
 
         const res = await fetch(url, 
             {
@@ -26,7 +37,12 @@ function FormCriarTarefa({ tarefas, dadosUsuario, adicionarTarefa}) {
             })
         if (res.ok) {
             const tarefa = await res.json()
-            adicionarTarefa(tarefa)
+            if (!editando) {
+                adicionarTarefa(tarefa)
+            } else {
+                atualizarTarefa(tarefa)
+                concluirEdicao()
+            }
             setDadosForm({texto: ""})
         } else {
             //TRATAR ERROS
@@ -55,18 +71,20 @@ function FormCriarTarefa({ tarefas, dadosUsuario, adicionarTarefa}) {
                     onChange={handleChange}
                 />
             </div>
-            <button className="btn btn-primary" id="addButton" onClick={criarTarefa}>Criar Tarefa</button>
+            <button className="btn btn-primary" id="addButton" onClick={criarOuEditarTarefa}>{editando? "Atualizar Tarefa": "Criar Tarefa"}</button>
         </form>
     )
 }
 
   
 const mapDispatchToProps = dispatch => ({
-    adicionarTarefa: tarefa => dispatch(adicionarTarefa(tarefa))
+    adicionarTarefa: tarefa => dispatch(adicionarTarefa(tarefa)),
+    atualizarTarefa: tarefa => dispatch(atualizarTarefa(tarefa)),
+    concluirEdicao: () => dispatch(concluirEdicao())
 });
 
 const mapStateToProps = state => ({
-    tarefas: state.tarefas,
+    editando: state.editando
 });
   
 

@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from "react"
 import './ListTarefas.css'
 import { connect } from "react-redux";
 import { setTarefas, atualizarTarefa, removerTarefa } from "../../store/actions/tarefasActions";
+import { editar } from "../../store/actions/editandoActions";
+import { PencilSquare, Trash } from "react-bootstrap-icons";
 
-function ListTarefas({ dadosUsuario, tarefas, setTarefas, atualizarTarefa, removerTarefa }) {
+function ListTarefas({ editar, dadosUsuario, tarefas, setTarefas, atualizarTarefa, removerTarefa }) {
 
     let url_base = "http://localhost:3000";
     let url = `${url_base}/tarefas`;
@@ -54,12 +56,27 @@ function ListTarefas({ dadosUsuario, tarefas, setTarefas, atualizarTarefa, remov
                     }
                 }
             )
-            if (res.ok) {               
+            if (res.ok) {
                 atualizarTarefa(tarefa);
-            } 
+            }
         }
     }
 
+
+    const deleteTarefa = async (tarefaId) => {
+        const res = await fetch(`${url}/${tarefaId}`,
+            {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${dadosUsuario.token}`
+                }
+            }
+        );
+        if (res.ok) {
+            removerTarefa(tarefaId);
+        }
+    } 
 
 
     return (
@@ -78,6 +95,19 @@ function ListTarefas({ dadosUsuario, tarefas, setTarefas, atualizarTarefa, remov
                                         </span>
                                         <span id="criado-em">Criado em {tarefa.data} </span>
                                     </td>
+
+                                    <td className="coluna-botoes">
+                                        <span 
+                                            className="btn btn-success" 
+                                            onClick={() => editar(tarefa)}>
+                                                <PencilSquare/>
+                                        </span>
+                                        <span 
+                                            className="btn btn-danger item-tarefa" 
+                                            onClick={() => deleteTarefa(tarefa._id)}>
+                                                <Trash/>
+                                        </span>
+                                    </td>
                                 </tr>
                             )
                         })}
@@ -94,11 +124,12 @@ function ListTarefas({ dadosUsuario, tarefas, setTarefas, atualizarTarefa, remov
 const mapStateToProps = state => ({
     tarefas: state.tarefas,
 });
-  
+
 const mapDispatchToProps = dispatch => ({
     setTarefas: tarefas => dispatch(setTarefas(tarefas)),
     atualizarTarefa: tarefa => dispatch(atualizarTarefa(tarefa)),
-    removerTarefa: tarefaId => dispatch(removeTask(tarefaId)),
+    removerTarefa: tarefaId => dispatch(removerTarefa(tarefaId)),
+    editar: (tarefa) => dispatch(editar(tarefa))
 });
 
 
