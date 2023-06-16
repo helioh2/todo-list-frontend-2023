@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FormCriarTarefa } from "./FormCriarTarefa";
+import FormCriarTarefa from "./FormCriarTarefa";
 import { FormEditarTarefa } from "./FormEditarTarefa";
 
 
@@ -17,7 +17,7 @@ export function Header(props) {
         } else {
 
             if (!props.tarefaSelecionda) {
-                return (<FormCriarTarefa />)
+                return (<FormCriarTarefa dadosUsuario={props.dadosUsuario}/>)
             } else {
                 return (<FormEditarTarefa />)
             }

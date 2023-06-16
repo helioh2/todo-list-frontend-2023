@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react"
 import './ListTarefas.css'
-import { Link } from "../../../node_modules/react-router-dom/dist/index";
+import { connect } from "react-redux";
+import { setTarefas, atualizarTarefa, removerTarefa } from "../../store/actions/tarefasActions";
 
-export function ListTarefas(props) {
+function ListTarefas({ dadosUsuario, tarefas, setTarefas, atualizarTarefa, removerTarefa }) {
 
-    const [tarefas, setTarefas] = useState({})
     let url_base = "http://localhost:3000";
     let url = `${url_base}/tarefas`;
 
@@ -22,8 +22,8 @@ export function ListTarefas(props) {
 
         if (res.ok) {
             const json = await res.json();
-            console.log(json.reduce((lista, valor) => ({ ...lista, [valor._id]: valor }), {}));  //transforma em um dicionario/objeto suja chave é o id
-            setTarefas(json.reduce((lista, valor) => ({ ...lista, [valor._id]: valor }), {}));
+            // console.log(json.reduce((lista, valor) => ({ ...lista, [valor._id]: valor }), {}));  //transforma em um dicionario/objeto suja chave é o id
+            setTarefas(json);
 
         } else {
             // TODO: Fazer tratamento de erros correto
@@ -31,17 +31,18 @@ export function ListTarefas(props) {
     }, [setTarefas])
 
     useEffect(() => {
-        if (props.dadosUsuario && props.dadosUsuario.usuario) {
-            fetchData(props.dadosUsuario.token);
+        if (dadosUsuario && dadosUsuario.usuario) {
+            fetchData(dadosUsuario.token);
         } else {
-            setTarefas({});
+            setTarefas([]);
         }
-    }, [fetchData, props, setTarefas])
+    }, [fetchData, dadosUsuario, setTarefas])
 
 
     const marcarTarefaComoFeita = async (tarefa) => {
 
         if (!tarefa.feito) {
+            tarefa.feito = true;
 
             const res = await fetch(`${url}/${tarefa._id}`,
                 {
@@ -49,16 +50,16 @@ export function ListTarefas(props) {
                     body: JSON.stringify(tarefa),
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${props.dadosUsuario.token}`
+                        'Authorization': `Bearer ${dadosUsuario.token}`
                     }
                 }
             )
-            if (res.ok) {
-                tarefa.feito = true;
-                setTarefas({ ...tarefas, [tarefa._id]: tarefa });
-            }
+            if (res.ok) {               
+                atualizarTarefa(tarefa);
+            } 
         }
     }
+
 
 
     return (
@@ -67,7 +68,7 @@ export function ListTarefas(props) {
 
                 <table className="table table-striped">
                     <tbody>
-                        {Object.values(tarefas).map(tarefa => {
+                        {tarefas.map(tarefa => {
                             return (
                                 <tr key={tarefa._id} className="linha-tarefa">
                                     <td className="coluna-texto">
@@ -88,3 +89,17 @@ export function ListTarefas(props) {
         </>
     )
 }
+
+
+const mapStateToProps = state => ({
+    tarefas: state.tarefas,
+});
+  
+const mapDispatchToProps = dispatch => ({
+    setTarefas: tarefas => dispatch(setTarefas(tarefas)),
+    atualizarTarefa: tarefa => dispatch(atualizarTarefa(tarefa)),
+    removerTarefa: tarefaId => dispatch(removeTask(tarefaId)),
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(ListTarefas);
