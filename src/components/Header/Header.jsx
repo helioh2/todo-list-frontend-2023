@@ -15,7 +15,9 @@ export function Header(props) {
             )
         } else {
 
-            return (<FormCriarTarefa dadosUsuario={props.dadosUsuario}/>)
+            return (<FormCriarTarefa addTarefa={props.addTarefa}
+                updateTarefa={props.updateTarefa} dadosUsuario={props.dadosUsuario}
+                editando={props.editando} setEditando={props.setEditando}/>)
 
         }
     }

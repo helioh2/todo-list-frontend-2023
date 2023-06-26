@@ -10,10 +10,13 @@ import { Pokedex } from './exemplos/Pokedex';
 import { Login } from './pages/Login/Login';
 import useDadosUsuario from './hooks/useDadosUsuario';
 import { useEffect } from 'react';
+import { useListTarefas } from './hooks/useListTarefas';
 
 function App() {
 
   const {setDadosUsuario, dadosUsuario, removeDadosUsuario} = useDadosUsuario();
+
+  const {listTarefas, setListTarefas, addTarefa, updateTarefa, removeTarefa, editando, setEditando} = useListTarefas();
 
   useEffect(() => {
 
@@ -52,7 +55,16 @@ function App() {
         <BrowserRouter>
         <Nav dadosUsuario={dadosUsuario} removeDadosUsuario={removeDadosUsuario}/>
           <Routes>
-            <Route index element={<Home dadosUsuario={dadosUsuario}/>} />
+            <Route index element={<Home 
+                  dadosUsuario={dadosUsuario} 
+                  listTarefas={listTarefas} 
+                  setListTarefas={setListTarefas}
+                  addTarefa={addTarefa}
+                  updateTarefa={updateTarefa}
+                  removeTarefa={removeTarefa}
+                  editando={editando}
+                  setEditando={setEditando}
+                  />} />
             <Route path="pagina_zuera" element={<PaginaZuera />} />
             <Route path="login" element={<Login setDadosUsuario={setDadosUsuario}/>} />
           </Routes>

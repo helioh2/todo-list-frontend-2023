@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import './ListTarefas.css'
-import { connect } from "react-redux";
-import { setTarefas, atualizarTarefa, removerTarefa } from "../../store/actions/tarefasActions";
-import { editar } from "../../store/actions/editandoActions";
 import { PencilSquare, Trash } from "react-bootstrap-icons";
 
-function ListTarefas({ editar, dadosUsuario, tarefas, setTarefas, atualizarTarefa, removerTarefa }) {
+function ListTarefas(props) {
 
     let url_base = "http://localhost:3000";
     let url = `${url_base}/tarefas`;
@@ -25,20 +22,20 @@ function ListTarefas({ editar, dadosUsuario, tarefas, setTarefas, atualizarTaref
         if (res.ok) {
             const json = await res.json();
             // console.log(json.reduce((lista, valor) => ({ ...lista, [valor._id]: valor }), {}));  //transforma em um dicionario/objeto suja chave é o id
-            setTarefas(json);
+            props.setListTarefas(json);
 
         } else {
             // TODO: Fazer tratamento de erros correto
         }
-    }, [setTarefas])
+    }, [props.setListTarefas])
 
     useEffect(() => {
-        if (dadosUsuario && dadosUsuario.usuario) {
-            fetchData(dadosUsuario.token);
+        if (props.dadosUsuario && props.dadosUsuario.usuario) {
+            fetchData(props.dadosUsuario.token);
         } else {
-            setTarefas([]);
+            props.setListTarefas([]);
         }
-    }, [fetchData, dadosUsuario, setTarefas])
+    }, [fetchData, props.setListTarefas, props.dadosUsuario])
 
 
     const marcarTarefaComoFeita = async (tarefa) => {
@@ -52,12 +49,12 @@ function ListTarefas({ editar, dadosUsuario, tarefas, setTarefas, atualizarTaref
                     body: JSON.stringify(tarefa),
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${dadosUsuario.token}`
+                        'Authorization': `Bearer ${props.dadosUsuario.token}`
                     }
                 }
             )
             if (res.ok) {
-                atualizarTarefa(tarefa);
+                props.updateTarefa(tarefa);
             }
         }
     }
@@ -69,12 +66,12 @@ function ListTarefas({ editar, dadosUsuario, tarefas, setTarefas, atualizarTaref
                 method: "DELETE",
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${dadosUsuario.token}`
+                    'Authorization': `Bearer ${props.dadosUsuario.token}`
                 }
             }
         );
         if (res.ok) {
-            removerTarefa(tarefaId);
+            props.removeTarefa(tarefaId);
         }
     } 
 
@@ -85,7 +82,7 @@ function ListTarefas({ editar, dadosUsuario, tarefas, setTarefas, atualizarTaref
 
                 <table className="table table-striped">
                     <tbody>
-                        {tarefas.map(tarefa => {
+                        {props.listTarefas.map(tarefa => {
                             return (
                                 <tr key={tarefa._id} className="linha-tarefa">
                                     <td className="coluna-texto">
@@ -99,7 +96,7 @@ function ListTarefas({ editar, dadosUsuario, tarefas, setTarefas, atualizarTaref
                                     <td className="coluna-botoes">
                                         <span 
                                             className="btn btn-success" 
-                                            onClick={() => editar(tarefa)}>
+                                            onClick={() => props.setEditando(tarefa)}>
                                                 <PencilSquare/>
                                         </span>
                                         <span 
@@ -121,16 +118,5 @@ function ListTarefas({ editar, dadosUsuario, tarefas, setTarefas, atualizarTaref
 }
 
 
-const mapStateToProps = state => ({
-    tarefas: state.tarefas,
-});
 
-const mapDispatchToProps = dispatch => ({
-    setTarefas: tarefas => dispatch(setTarefas(tarefas)),
-    atualizarTarefa: tarefa => dispatch(atualizarTarefa(tarefa)),
-    removerTarefa: tarefaId => dispatch(removerTarefa(tarefaId)),
-    editar: (tarefa) => dispatch(editar(tarefa))
-});
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(ListTarefas);
+export default ListTarefas;
