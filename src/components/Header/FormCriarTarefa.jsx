@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react"
 
+import { adicionarTarefa, atualizarTarefa } from "../../store/actions/tarefasActions";
+import { concluirEdicao } from "../../store/actions/editandoActions";
+import { connect } from "react-redux";
 
-function FormCriarTarefa(props) {
+function FormCriarTarefa({editando, concluirEdicao, dadosUsuario, adicionarTarefa, atualizarTarefa}) {
 
     const [dadosForm, setDadosForm] = useState({texto: ""})
 
 
     useEffect(() => {
-        if (props.editando) {
-            setDadosForm({texto: props.editando.texto})
+        if (editando) {
+            setDadosForm({texto: editando.texto})
         }
-    }, [props.editando])
+    }, [editando])
 
     async function criarOuEditarTarefa(event) {
         event.preventDefault();
@@ -18,9 +21,9 @@ function FormCriarTarefa(props) {
         let url_base = "http://localhost:3000";
         let url = `${url_base}/tarefas`
         let method = "POST"
-        if (props.editando) {
+        if (editando) {
             method = "PATCH"
-            url += `/${props.editando._id}`
+            url += `/${editando._id}`
         }
 
         const res = await fetch(url, 
@@ -28,17 +31,17 @@ function FormCriarTarefa(props) {
                 method: method,
                 body: JSON.stringify(dadosForm),
                 headers: {
-                    Authorization: 'Bearer ' + props.dadosUsuario.token,
+                    Authorization: 'Bearer ' + dadosUsuario.token,
                     'Content-Type': 'application/json'
                 },
             })
         if (res.ok) {
             const tarefa = await res.json()
-            if (!props.editando) {
-                props.addTarefa(tarefa)
+            if (!editando) {
+                adicionarTarefa(tarefa)
             } else {
-                props.updateTarefa(tarefa)
-                props.setEditando(null)
+                atualizarTarefa(tarefa)
+                concluirEdicao()
             }
             setDadosForm({texto: ""})
         } else {
@@ -68,12 +71,22 @@ function FormCriarTarefa(props) {
                     onChange={handleChange}
                 />
             </div>
-            <button className="btn btn-primary" id="addButton" onClick={criarOuEditarTarefa}>{props.editando? "Atualizar Tarefa": "Criar Tarefa"}</button>
+            <button className="btn btn-primary" id="addButton" onClick={criarOuEditarTarefa}>{editando? "Atualizar Tarefa": "Criar Tarefa"}</button>
         </form>
     )
 }
 
+  
+const mapDispatchToProps = dispatch => ({
+    adicionarTarefa: tarefa => dispatch(adicionarTarefa(tarefa)),
+    atualizarTarefa: tarefa => dispatch(atualizarTarefa(tarefa)),
+    concluirEdicao: () => dispatch(concluirEdicao())
+});
+
+const mapStateToProps = state => ({
+    editando: state.editando
+});
+  
 
 
-
-export default FormCriarTarefa;
+export default connect(mapStateToProps, mapDispatchToProps)(FormCriarTarefa);

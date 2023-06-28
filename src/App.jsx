@@ -9,13 +9,13 @@ import { PaginaZuera } from './pages/PaginaZuera/PaginaZuera';
 import { Pokedex } from './exemplos/Pokedex';
 import { Login } from './pages/Login/Login';
 import useDadosUsuario from './hooks/useDadosUsuario';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useListTarefas } from './hooks/useListTarefas';
 
 function App() {
 
   const {setDadosUsuario, dadosUsuario, removeDadosUsuario} = useDadosUsuario();
-
+  const [algumaCoisa, setAlgumaCoisa] = useState(null);
   const {listTarefas, setListTarefas, addTarefa, updateTarefa, removeTarefa, editando, setEditando} = useListTarefas();
 
   useEffect(() => {

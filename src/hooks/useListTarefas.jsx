@@ -12,8 +12,14 @@ export function useListTarefas() {
 
     function updateTarefa(tarefaAtualizada) {
         setListTarefas(
-            listTarefas.map(tarefa =>
-                tarefa._id === tarefaAtualizada._id ? tarefaAtualizada : tarefa
+            listTarefas.map(tarefa => {
+                if (tarefa._id === tarefaAtualizada._id) {
+                    return tarefaAtualizada;
+                } else {
+                    return tarefa;
+                }
+            }
+            // tarefa._id === tarefaAtualizada._id ? tarefaAtualizada : tarefa  //operação ternária
             )
           );
     }
